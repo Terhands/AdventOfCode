@@ -124,6 +124,40 @@ def solve_part_1(filename):
   return closest_intersection, intersection_distance
 
 
+def is_between(val, val_range):
+  print val_range, min(val_range), val, max(val_range)
+  return min(val_range) <= val <= max(val_range) 
+
+
+def distance_to_intersect(wire, point):
+  distance = 0
+  print point
+  for i in range(len(wire) - 1):
+    line = Line(wire[i], wire[i+1])
+    if line.is_horizontal():
+      if line.p1.y == point.y and is_between(point.x, (line.p1.x, line.p2.x)):
+        return distance + abs(line.p1.x - point.x)
+      else:
+        distance += abs(line.p1.x - line.p2.x)
+
+    elif line.is_vertical():
+      if line.p1.x == point.x and is_between(point.y, (line.p1.y, line.p2.y)):
+        return distance + abs(line.p1.y - point.y)
+      else:
+        distance += abs(line.p1.y - line.p2.y)
+    print line, distance
+
 def solve_part_2(filename):
-  pass
+  wires = [to_wire_path(line) for line in read_input(filename)]
+  intersection_points = find_intersections(*wires)  # I'm cheating here - I know there are only ever 2 wires in the input
+  # print intersection_points
+  
+  best_distance = 999999999
+  # I could do this in a list comprehension but I'm guessing that part 2 will ask me about the actual point coordinates, that or ask abot the euclidian distance :P
+  for intersection_point in intersection_points:
+    distance = sum([distance_to_intersect(wire, intersection_point) for wire in wires])
+    if distance < best_distance:
+      best_distance = distance
+
+  return best_distance
 
