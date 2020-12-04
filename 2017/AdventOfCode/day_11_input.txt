@@ -1,0 +1,3 @@
+The first floor contains a A-G,A-M,B-G,C-G
+The second floor contains a B-M,C-M
+The third floor contains a D-G,D-M,E-G,E-M

@@ -1,0 +1,3 @@
+The first floor contains a H-M,L-M
+The second floor contains a H-G
+The third floor contains a L-G
