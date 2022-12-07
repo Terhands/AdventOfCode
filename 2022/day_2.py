@@ -49,7 +49,7 @@ def calculate_score_per_round(filename, parser, score_calculator):
 
 
 def part_1():
-    scores_per_round = calculate_score_per_round('2/input.txt', parse_round_1, compute_score)
+    scores_per_round = calculate_score_per_round('inputs/day2_input.txt', parse_round_1, compute_score)
     print(f"Part 1: Total score is {sum(scores_per_round)}")
 
 
@@ -72,7 +72,7 @@ def compute_score_2(opponent_play, decision):
 
 
 def part_2():
-    scores_per_round = calculate_score_per_round('2/input.txt', parse_round_2, compute_score_2)
+    scores_per_round = calculate_score_per_round('inputs/day2_input.txt', parse_round_2, compute_score_2)
     print(f"Part 2: Total score is {sum(scores_per_round)}")
 
 

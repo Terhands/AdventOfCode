@@ -23,7 +23,7 @@ def calories_per_elf(filename):
 
 
 def part_1():
-    max_calories = max(calories_per_elf("1/input.txt"))
+    max_calories = max(calories_per_elf("inputs/day1_input.txt"))
     print(f"The most calories carried: {max_calories}")
 
 
@@ -34,7 +34,7 @@ def pop_current_max(_list):
 
 
 def part_2():
-    per_elf = calories_per_elf("1/input.txt")
+    per_elf = calories_per_elf("inputs/day1_input.txt")
     top_three = [pop_current_max(per_elf) for _ in range(3)]
     print(f"The top three calories carried are: {top_three} which totals {sum(top_three)} calories")
 
