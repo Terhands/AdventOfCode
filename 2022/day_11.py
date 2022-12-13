@@ -118,7 +118,7 @@ def part_1():
 def part_2():
     monkeys = build_monkeys(read_from_file(get_filename(11, is_sample=False), lambda x: x.strip()))
     lowest_common_multiple = math.lcm(*[monkey.test for monkey in monkeys])
-    # ok, so without some kind of limiting factor, some of these numbers get to be thousands of digits, and any arithmeticic operations on them are
+    # ok, so without some kind of limiting factor, some of these numbers get to be thousands of digits, and any arithmetic operations on them are
     # slow AF. We know all of our test divisors though, so we also know that when our worry value is divisible by ALL of them, that we can reduce back
     # to the lowest common multiplier. Conveniently, python added an lcm function in 3.9, which makes finding that value (without my gross nonsense math)
     # incredibly easy :tada
