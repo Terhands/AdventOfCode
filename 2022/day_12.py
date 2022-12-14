@@ -70,12 +70,7 @@ def  build_map(map_data):
             location.add_connection(get_location(row+1, col))
             location.add_connection(get_location(row, col-1))
             location.add_connection(get_location(row, col+1))
-    for row in location_grid:
-        print(f"{[x.elevation for x in row]}")
-    for row in location_grid:
-        for loc in row:
-            print(loc)
-    return starting_location, target_location
+    return starting_location, target_location, location_grid
 
 
 def compute_distances_from(starting_location):
@@ -93,13 +88,41 @@ def compute_distances_from(starting_location):
     
 
 def part_1():
-    starting_location, target_location = build_map(read_from_file(get_filename(12, is_sample=False), lambda line: [p for p in line.strip()]))
+    starting_location, target_location, _ = build_map(read_from_file(get_filename(12, is_sample=False), lambda line: [p for p in line.strip()]))
     compute_distances_from(starting_location)
     print(f"Part 1: Shortest path from {starting_location} -> {target_location} is {target_location.distance_from_start} steps.")
 
 
+def get_potential_starting_locations(location_grid):
+    possible_starting_locations = []
+    for row in location_grid:
+        for location in row:
+            if location.elevation == 97:
+                possible_starting_locations.append(location)
+    return possible_starting_locations
+
+
+def reset_location_distances(location_grid):
+    for row in location_grid:
+        for location in row:
+            location.distance_from_start = None
+
+
+def compute_shortest_distance_from_all_possible_starting_locations(possible_starting_locations, target_location, location_grid):
+    distances = []
+    for starting_location in possible_starting_locations:
+        compute_distances_from(starting_location)
+        if target_location.distance_from_start:
+            distances.append(target_location.distance_from_start)
+        reset_location_distances(location_grid)
+    return min(distances)
+
+
 def part_2():
-    pass
+    _, target_location, location_grid = build_map(read_from_file(get_filename(12, is_sample=False), lambda line: [p for p in line.strip()]))
+    starting_locations = get_potential_starting_locations(location_grid)
+    shortest_distance = compute_shortest_distance_from_all_possible_starting_locations(starting_locations, target_location, location_grid)
+    print(f"Part 2: Shortest path from any starting location -> {target_location} is {shortest_distance} steps.")
 
 
 part_1()
