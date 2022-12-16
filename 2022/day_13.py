@@ -1,3 +1,5 @@
+from functools import cmp_to_key
+
 from aoc_utils import read_from_file, get_filename
 
 
@@ -63,7 +65,6 @@ def part_1():
     print(f"Part 1: Valid data packet sum is {sum(correct_indices)}")
 
 
-from functools import cmp_to_key
 def part_2():
     pairs = build_pairs(read_from_file(get_filename(13, is_sample=False), parse_list))
     divider_packets = [[[2]], [[6]]]
