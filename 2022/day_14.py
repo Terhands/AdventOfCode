@@ -110,5 +110,5 @@ def part_2():
     print(f'Part 2: Maximum sand was {len(cave.resting_sand)}')
 
 
-# part_1()
+part_1()
 part_2()
