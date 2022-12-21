@@ -33,18 +33,27 @@ def calculate_coverage_for_row(row, sensors_to_beacons):
     return covered_ranges, covered_points
 
 
-# Part 1: Coverage for row 2000000 is 6425133
 def part_1():
     row = 2000000
-    # row = 10
     sensors_to_beacons = parse_sensors(read_from_file(get_filename(15, is_sample=row==10), lambda x: x.strip()))
     covered_ranges, covered_points = calculate_coverage_for_row(row, sensors_to_beacons)
     row_coverage = sum([1 + i.end - i.begin for i in covered_ranges.all_intervals])
     overlapping_beacons = sum({1 for _, beacon in sensors_to_beacons if beacon[1] == row and (covered_ranges.overlaps(beacon[0]) or beacon in covered_points)})
     print(f"Part 1: Coverage for row {row} is {row_coverage + len(covered_points) - overlapping_beacons}")
 
+
+def find_uncovered_point(sensors_to_beacons, boundary):
+    for y in range(boundary):
+        covered_ranges, _ = calculate_coverage_for_row(y, sensors_to_beacons)
+        if len(covered_ranges.all_intervals) > 1:
+            return sorted(list(covered_ranges.all_intervals))[0].end + 1, y
+
+
 def part_2():
-    pass
+    row = 2000000
+    sensors_to_beacons = parse_sensors(read_from_file(get_filename(15, is_sample=row==10), lambda x: x.strip()))
+    x, y = find_uncovered_point(sensors_to_beacons, row * 2)
+    print(f"Part 2: Tuning frequence for ({x}, {y}) is {(x * 4000000) + y}")
 
 
 part_1()
