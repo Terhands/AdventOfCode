@@ -142,7 +142,7 @@ defmodule Day5 do
 
     all_mappings = maps_to_destiation ++ unmapped_source_ranges
     all_mappings
-    |> Enum.filter(fn (val) -> val != [] end)s
+    |> Enum.filter(fn (val) -> val != [] end)
   )
 
   defp merge_step([start1, end1], [[start2, end2] | tail]), do: (
