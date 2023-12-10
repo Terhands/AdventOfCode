@@ -28,7 +28,7 @@ defmodule Day5 do
 
   def run, do: (
     filename = "sample.txt"
-    # filename = "input.txt"
+    filename = "input.txt"
     {:ok, contents} = File.read(filename)
     [seeds_str | ranges_strs] = contents |> String.split("--")
     seeds = to_seeds(seeds_str)
@@ -71,40 +71,10 @@ defmodule Day5 do
     |> Enum.min()
   )
 
-  def test(), do: (
-    r1 = to_dest_ranges([10, 15], [5, 10, 5])
-    [[5, 9], [15, 15]] = r1
-    IO.inspect("Test 1 Passed")
-
-    r2 = to_dest_ranges([12, 30], [5, 10, 5])
-    [[7, 9], [15, 30]] = r2
-    IO.inspect("Test 2 Passed")
-
-    r3 = to_dest_ranges([5, 10], [5, 10, 5])
-    [[5, 9], [5, 5]] = r3
-    IO.inspect("Test 3 Passed")
-
-    r4 = to_dest_ranges([5, 20], [5, 10, 5])
-    [[5, 9], [5, 9], [15, 20]] = r4
-    IO.inspect("Test 4 Passed")
-
-    r5 = to_dest_ranges([5, 20], [15, 10, 5])
-    [[5, 9], [15, 19], [15, 20]] = r5
-    IO.inspect("Test 5 Passed")
-
-    r6 = to_dest_ranges([5, 7], [15, 10, 5])
-    [[5, 7]] = r6
-    IO.inspect("Test 6 Passed")
-
-    r6 = to_dest_ranges([10, 15], [15, 10, 15])
-    [[15, 20]] = r6
-    IO.inspect("Test 6 Passed")
-  )
-
   defp to_dest_ranges([src_start, src_end], [dest_start, map_source_start, range_length]), do: (
     map_source_end = map_source_start + range_length - 1
     dest_end = dest_start + range_length - 1
-    result = cond do
+    cond do
       #   s--s
       # m-----m
       src_start >= map_source_start and src_end <= map_source_end ->
@@ -123,32 +93,25 @@ defmodule Day5 do
         {[map_source_start, src_end], [dest_start, dest_start + (src_end - map_source_start)]}
       true -> {[], []}
     end
-    IO.inspect({
-      [src_start, src_end],
-      [map_source_start, "-", map_source_end, :->, dest_start, "-", dest_end, :==, result]}, charlists: :as_lists)
-    result
   )
 
   defp is_value_unmapped?(value, []), do: (
     true
   )
   defp is_value_unmapped?(value, mappings), do: (
-    IO.inspect("value: #{value}, mappings: #{mappings}")
-    result = mappings
+    mappings
     |> Enum.map(fn([start, finish]) -> value < start or value > finish end)
     |> Enum.all?()
-    IO.inspect("Is unmapped?: #{result}")
-    result
   )
 
+  # Well that was a bust, in order to determine which values were unmapped, I ended up looping over every seed number
+  # ANYWAY, which kind of voids bothering to work with ranges from the get go, which would have been easily do-able in a language
+  # that allows variable mutation, instead of just being a pain in general.
   defp unmapped_ranges([start, finish], mapped_ranges), do: (
-    # IO.getn("#{start} - #{finish} .. next?")
     unmapped_values = start..finish
     |> Enum.filter(&is_value_unmapped?(&1, mapped_ranges))
     |> Enum.map(fn(value) -> [value, value] end)
-    |> IO.inspect(charlists: :as_lists)
 
-    IO.inspect(unmapped_values, charlists: :as_lists)
     cond do
       unmapped_values == [] -> []
       true ->
@@ -156,51 +119,33 @@ defmodule Day5 do
         |> prep()
         |> Enum.reduce(
           fn([v3, _], [[v1, v2] | tail]) ->
-            IO.inspect({v1, v2, v3})
             cond do
               v2 + 1 == v3 -> [[v1, v3] | tail]
               true -> [[v1, v2] | [[v3, v3] | tail]]
             end
-          end) #|> IO.inspect(charlists: :as_lists)
+          end)
     end
-
   )
 
   defp source_range_to_dest_ranges(source_range, {key, range_map}), do: (
-    IO.inspect([key, source_range])
     dest_range_mappings = range_map
     |> Enum.filter(fn (val) -> val != [] end)
     |> Enum.map(&to_dest_ranges(source_range, &1))
-    |> IO.inspect(charlists: :as_lists)
-
-    IO.inspect({"getting mapped ranges for", source_range, "from", dest_range_mappings}, charlists: :as_lists)
     mapped_source_ranges = dest_range_mappings
     |> Enum.map(fn({mapped_range, _}) -> mapped_range end)
     |> Enum.filter(fn (val) -> val != [] end)
 
-    IO.inspect(["Mapped ranges:", mapped_source_ranges], charlists: :as_lists)
-    IO.inspect([source_range, "-", mapped_source_ranges], charlists: :as_lists)
-
     unmapped_source_ranges = unmapped_ranges(source_range, mapped_source_ranges)
-    IO.inspect(["Unmapped ranges:", unmapped_source_ranges], charlists: :as_lists)
 
     maps_to_destiation = dest_range_mappings
     |> Enum.map(fn({_, dest_range}) -> dest_range end)
-    |> IO.inspect(charlists: :as_lists)
 
     all_mappings = maps_to_destiation ++ unmapped_source_ranges
     all_mappings
-    |> Enum.filter(fn (val) -> val != [] end)
-    |> IO.inspect(charlists: :as_lists)
-
-
-    # We only want the actual mapped ranges, so drop our metadata at this point.
-    # dest_range_mappings
-    # |> Enum.map(fn ({_, range}) -> range end) ++ unmapped_ranges
+    |> Enum.filter(fn (val) -> val != [] end)s
   )
 
   defp merge_step([start1, end1], [[start2, end2] | tail]), do: (
-    # IO.inspect({"Attempting to merge:", [start1, end1], [start2, end2]}, charlists: :as_lists)
     cond do
       # we're sorted by x and y, and don't have any gaps yet, so if we get two digits on the same row
       # they're safe to combine
@@ -220,18 +165,16 @@ defmodule Day5 do
   defp prep([head | tail]), do: [[head]|tail]
 
   defp merge_intervals(intervals), do: (
-    # IO.inspect("MERGING...")
-    # IO.inspect(intervals |> Enum.sort(fn ([s1, _], [s2, _]) -> s1 < s2 end), charlists: :as_lists)
     intervals
     |> Enum.filter(fn (val) -> val != [] end)
     |> Enum.sort(fn ([s1, _], [s2, _]) -> s1 > s2 end)
     |> prep()
     |> Enum.reduce(&merge_step/2)
-    # |> IO.inspect(charlists: :as_lists)
   )
 
+  # I should have just used tuples to represent my ranges, and then I could have just used flatten
+  # in stead of this monstrosity...
   defp reformat(list), do: (
-    # IO.inspect(list, charlists: :as_lists)
     list
     |> List.flatten()
     |> Enum.with_index()
@@ -242,7 +185,7 @@ defmodule Day5 do
       end
     end)
     |> Enum.zip()
-    |> Enum.map(fn ({v1, v2}) -> [v1, v2] |> Enum.sort() end) #|> IO.inspect(charlists: :as_lists)
+    |> Enum.map(fn ({v1, v2}) -> [v1, v2] |> Enum.sort() end)
   )
 
   # Ok so part two, brute forcing would be nightmarishly slow. I think the solution here would be to keep the ranges in memory,
@@ -254,44 +197,33 @@ defmodule Day5 do
   defp part2(seeds, [seed_to_soil | [soil_to_fert | [fert_to_water | [water_to_light | [light_to_temp | [temp_to_humid | [humid_to_loc | []]]]]]]]), do: (
     IO.puts("Part 2 Solution:")
     seeds
-    # |> IO.inspect(charlists: :as_lists)
     |> reformat()
-    # |> IO.inspect(charlists: :as_lists)
     |> Enum.map(fn ([length, src_start]) -> [src_start, src_start + length - 1] end)
     |> merge_intervals()
-    # |> IO.inspect(charlists: :as_lists)
     |> Enum.map(&source_range_to_dest_ranges(&1, seed_to_soil))
     |> reformat()
     |> merge_intervals()
-    |> IO.inspect(charlists: :as_lists)
     |> Enum.map(&source_range_to_dest_ranges(&1, soil_to_fert))
     |> reformat()
     |> merge_intervals()
-    |> IO.inspect(charlists: :as_lists)
     |> Enum.map(&source_range_to_dest_ranges(&1, fert_to_water))
     |> reformat()
     |> merge_intervals()
-    |> IO.inspect(charlists: :as_lists)
     |> Enum.map(&source_range_to_dest_ranges(&1, water_to_light))
     |> reformat()
-    |> IO.inspect(charlists: :as_lists)
     |> merge_intervals()
     |> Enum.map(&source_range_to_dest_ranges(&1, light_to_temp))
     |> reformat()
-    |> IO.inspect(charlists: :as_lists)
     |> merge_intervals()
     |> Enum.map(&source_range_to_dest_ranges(&1, temp_to_humid))
     |> reformat()
-    |> IO.inspect(charlists: :as_lists)
     |> merge_intervals()
     |> Enum.map(&source_range_to_dest_ranges(&1, humid_to_loc))
     |> reformat()
-    |> IO.inspect(charlists: :as_lists)
     |> merge_intervals()
     |> List.flatten()
     |> Enum.min()
   )
 end
 
-# Day5.test()
 Day5.run()
