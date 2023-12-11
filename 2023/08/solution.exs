@@ -77,7 +77,7 @@ defmodule Day8 do
   # Sneaky, I see what you've done here, it's a common factor problem, and instead of allowing arbitrary starting points to intersect with
   # end positions outside of their initial end position, each start will always only cycle back to the same end position, and with the same
   # step offset. So all we need to do is find how many steps each starting position takes to hit it's end, and then find the lowest common
-  #
+  # multiple.
   defp part2(desert_map, instructions), do: (
     IO.puts("Part 2 Solution:")
     [largest_value | rest] = starting_positions(desert_map)
