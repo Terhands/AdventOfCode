@@ -26,6 +26,7 @@ defmodule Day8 do
   def run, do: (
     filename = "sample1.txt"
     filename = "sample2.txt"
+    filename = "sample3.txt"
     filename = "input.txt"
     {:ok, contents} = File.read(filename)
     [instructions_str | map_data_strs] = contents |> String.split("\n", trim: true) |> Enum.filter(fn(val) -> val != "" end)
@@ -37,14 +38,18 @@ defmodule Day8 do
   )
 
   defp steps_to_exit(desert_map, instructions, current_desert_position, current_step), do: (
-    case current_desert_position do
-      "ZZZ" -> current_step
+    case is_end_position?(current_desert_position) do
+      true -> current_step
       _ ->
         instruction = instructions[rem(current_step, map_size(instructions))]
         next_position = move(instruction, desert_map[current_desert_position])
         # peek("From #{current_desert_position}, moving #{instruction}, lands at: #{next_position}")
         steps_to_exit(desert_map, instructions, next_position, current_step + 1)
     end
+  )
+  defp is_end_position?(position), do: (
+    [_, _, val] = String.graphemes(position)
+    val == "Z"
   )
   defp move(instruction, {left, right}), do: (
     case instruction do
@@ -58,8 +63,28 @@ defmodule Day8 do
     steps_to_exit(desert_map, instructions, "AAA", 0)
   )
 
+  defp starting_positions(desert_map), do: (
+    desert_map
+    |> Map.keys()
+    |> Enum.filter(fn(position) ->
+      case String.graphemes(position) do
+        [_, _, "A"] -> true
+        _ -> false
+      end
+    end)
+  )
+
+  # Sneaky, I see what you've done here, it's a common factor problem, and instead of allowing arbitrary starting points to intersect with
+  # end positions outside of their initial end position, each start will always only cycle back to the same end position, and with the same
+  # step offset. So all we need to do is find how many steps each starting position takes to hit it's end, and then find the lowest common
+  #
   defp part2(desert_map, instructions), do: (
     IO.puts("Part 2 Solution:")
+    [largest_value | rest] = starting_positions(desert_map)
+    |> Enum.map(&steps_to_exit(desert_map, instructions, &1, 0))
+    |> Enum.sort()
+    |> Enum.reverse()
+    # Then I'm being lazy, so just dump these values in an LCM solver.
   )
 end
 
