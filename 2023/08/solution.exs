@@ -1,4 +1,4 @@
-# See: https://adventofcode.com/2023/day/7
+# See: https://adventofcode.com/2023/day/8
 
 defmodule Day8 do
 
