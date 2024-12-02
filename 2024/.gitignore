@@ -1,0 +1,6 @@
+# ignore some calva / clojure stuff
+output.calva-repl
+.cli-kondo/*
+.cpcache/*
+.lsp/.cache/*
+.nrepl-port
